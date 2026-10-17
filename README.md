@@ -24,6 +24,12 @@ Powered by **Google Gemma 4 (`gemma-4-26b-a4b-it`)**, Patch Pilot combines nativ
 
 ---
 
+## Example:
+<img width="1919" height="868" alt="test_ui" src="https://github.com/user-attachments/assets/67d980b2-a784-4db2-92d8-9c88d48365fd" />
+Result:
+<img width="1919" height="868" alt="test_ui_annotated" src="https://github.com/user-attachments/assets/c1d85b55-bf05-48f3-a2be-1b53d8d8424e" />
+
+
 ## ✨ Key Innovations
 
 - **Gemma 4 Multimodal Spatial Grounding:** Leverages Google's `gemma-4-26b-a4b-it` model to perform native zero-shot visual bug localization, returning normalized `[y1, x1, y2, x2]` bounding box coordinates without relying on fragile external heuristics.
