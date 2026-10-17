@@ -1,0 +1,17 @@
+{
+  "repo": {
+    "owner": "pallets",
+    "name": "click",
+    "branch": "main"
+  },
+  "issue": {
+    "number": 1842,
+    "title": "JSONDecodeError when parsing empty string input in config loader",
+    "body": "Calling load_config('') with an empty string causes json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0). It should gracefully return an empty dictionary instead of crashing.",
+    "url": "https://github.com/pallets/click/issues/1842"
+  },
+  "triaged_target_files": [
+    "src/click/parser.py",
+    "tests/test_parser.py"
+  ]
+}
