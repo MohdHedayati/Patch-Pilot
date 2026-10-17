@@ -44,6 +44,36 @@ def test_extract_image_urls():
     assert "https://example.com/assets/bug_view.jpg?v=2" in urls
 
 
+def test_extract_image_urls_github_user_attachments():
+    text = """
+    Bug screenshot:
+    ![image](https://github.com/user-attachments/assets/12345-abcde.png)
+
+    UUID without extension:
+    ![drag-drop](https://github.com/user-attachments/assets/7b5870b2-38e9-4e4b-97e3-0d34bf46f778)
+
+    With markdown title:
+    ![annotated](https://github.com/user-attachments/assets/9999-xyz.png "Navbar issue")
+
+    With angle brackets:
+    ![enclosed](<https://github.com/user-attachments/assets/8888-wrapped.png>)
+
+    Direct link to attachment:
+    [attachment_link](https://github.com/user-attachments/assets/5555-link.png)
+
+    Ignored regular link:
+    [pull request](https://github.com/owner/repo/pull/1)
+    """
+    urls = extract_image_urls(text)
+    assert len(urls) == 5
+    assert "https://github.com/user-attachments/assets/12345-abcde.png" in urls
+    assert "https://github.com/user-attachments/assets/7b5870b2-38e9-4e4b-97e3-0d34bf46f778" in urls
+    assert "https://github.com/user-attachments/assets/9999-xyz.png" in urls
+    assert "https://github.com/user-attachments/assets/8888-wrapped.png" in urls
+    assert "https://github.com/user-attachments/assets/5555-link.png" in urls
+    assert "https://github.com/owner/repo/pull/1" not in urls
+
+
 def test_extract_image_urls_empty():
     assert extract_image_urls("Plain text with no images or links.") == []
 

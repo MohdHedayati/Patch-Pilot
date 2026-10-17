@@ -145,31 +145,43 @@ class GitHubClient:
 def extract_image_urls(text: str) -> list[str]:
     """Extract image URLs from markdown and HTML image tags.
 
-    Parses ``![alt](url)`` and ``<img src="url">`` patterns, returning
-    only URLs that point to common image formats or GitHub user-content
-    attachment hosts.  Results are deduplicated while preserving order.
+    Parses ``![alt](url)``, ``<img src="url">``, direct markdown links, and
+    modern GitHub attachment URLs (including extensionless
+    ``github.com/user-attachments/assets/`` UUIDs). Results are deduplicated
+    while preserving order.
     """
     _IMAGE_EXTENSIONS = re.compile(
-        r"\.(png|jpe?g|gif|webp|svg)(\?.*)?$", re.IGNORECASE
+        r"\.(png|jpe?g|gif|webp|svg|bmp|tiff?)(\?.*)?$", re.IGNORECASE
     )
-    _GITHUB_USERCONTENT = re.compile(
-        r"https?://user-images\.githubusercontent\.com/", re.IGNORECASE
+    _GITHUB_ATTACHMENT_DOMAINS = re.compile(
+        r"https?://(?:user-images\.githubusercontent\.com|"
+        r"private-user-images\.githubusercontent\.com|"
+        r"github\.com/(?:[^/\s]+/){1,2}assets/|"
+        r"github\.com/user-attachments/assets/)",
+        re.IGNORECASE,
     )
 
-    # Markdown image syntax: ![alt](url)
-    md_pattern = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
+    # Markdown image syntax: ![alt](url) or ![alt](<url> "title")
+    md_pattern = re.compile(r"!\[[^\]]*\]\((<?[^\s>)]+>?)(?:\s+[\"'][^\"']*[\"'])?\)")
     # HTML <img> tag: <img ... src="url" ...>
     html_pattern = re.compile(r"<img\s[^>]*?src=[\"']([^\"']+)[\"']", re.IGNORECASE)
+    # Markdown link syntax: [alt](url)
+    link_pattern = re.compile(r"\[[^\]]*\]\((<?[^\s>)]+>?)(?:\s+[\"'][^\"']*[\"'])?\)")
 
-    urls: list[str] = []
+    candidates: list[str] = []
     for match in md_pattern.finditer(text):
-        urls.append(match.group(1).strip())
+        url = match.group(1).strip("<>").strip()
+        candidates.append(url)
     for match in html_pattern.finditer(text):
-        urls.append(match.group(1).strip())
+        url = match.group(1).strip("<>").strip()
+        candidates.append(url)
+    for match in link_pattern.finditer(text):
+        url = match.group(1).strip("<>").strip()
+        candidates.append(url)
 
     filtered: list[str] = []
-    for url in urls:
-        if _IMAGE_EXTENSIONS.search(url) or _GITHUB_USERCONTENT.match(url):
+    for url in candidates:
+        if _IMAGE_EXTENSIONS.search(url) or _GITHUB_ATTACHMENT_DOMAINS.search(url):
             if url not in filtered:
                 filtered.append(url)
     return filtered
@@ -225,8 +237,10 @@ def download_image(
             resp = requests.get(url_or_path, headers=headers, timeout=TIMEOUT, stream=True)
             resp.raise_for_status()
 
-            # Derive a filename from the URL
+            # Derive a filename from the URL, ensuring an image extension for Pillow compatibility
             filename = os.path.basename(url_or_path.split("?")[0]) or "image"
+            if not os.path.splitext(filename)[1]:
+                filename = f"{filename}.png"
             filepath = os.path.join(dest_dir, filename)
 
             with open(filepath, "wb") as fh:
