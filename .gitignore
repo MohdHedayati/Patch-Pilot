@@ -1,0 +1,68 @@
+# Antigravity Workspace Metadata
+.antigravity
+.antigravity/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Playwright & Browsers
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Agent Run Artifacts & Outputs
+output/
+*.diff
+visual_diff_*.png
+before_annotated.png
+after_fixed.png
+
+# IDEs & System
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+

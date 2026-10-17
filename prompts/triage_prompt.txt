@@ -1,0 +1,27 @@
+You are executing Step 1 (Triage) of the Patch-Pilot pipeline.
+
+### OBJECTIVE:
+Identify the 1 to 3 files in the repository most likely to contain the root cause of the reported issue or require modification to resolve it.
+
+### REPOSITORY FILE TREE:
+```
+{{repository_file_tree}}
+```
+
+### ISSUE REPORT:
+```
+{{issue_body}}
+```
+
+### INSTRUCTIONS:
+1. Cross-reference stack traces, module names, symbols, and error descriptions from the issue report against the provided repository file tree.
+2. Select between 1 and 3 file paths (from the provided tree only) with the highest probability of harboring the bug or needing a fix.
+3. Output MUST be ONLY a raw valid JSON array of strings containing the exact paths as they appear in the file tree.
+
+### HARD CONSTRAINTS:
+- Do NOT output markdown code blocks (NO ``` or ```json).
+- Do NOT output preamble, postscript, thought process, or explanations.
+- Output MUST start with `[` and end with `]`.
+- Output MUST contain at least 1 and at most 3 paths.
+- Paths MUST exist in the provided repository file tree.
+
